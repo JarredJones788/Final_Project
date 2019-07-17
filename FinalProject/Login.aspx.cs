@@ -1,6 +1,7 @@
 ﻿using FinalProject.lib;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Linq;
 using System.Web;
@@ -20,7 +21,7 @@ namespace FinalProject
                 Account user = auth.checkSession(myCookie.Value.ToString());
                 if (user != null)
                 {
-                    Response.Redirect("https://localhost:44309/Default");
+                    Response.Redirect("https://localhost:44309/Home");
                 }
             }
         }
@@ -32,7 +33,7 @@ namespace FinalProject
             if (user != null)
             {
                 auth.setClientToken(Response, user.getToken());
-                Response.Redirect("https://localhost:44309/Default");
+                Response.Redirect("https://localhost:44309/Home");
             }
             else
             {

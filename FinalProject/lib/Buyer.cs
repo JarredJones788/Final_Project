@@ -8,7 +8,7 @@ namespace FinalProject.lib
     public class Buyer : Account
     {
 
-        public Buyer(String id, String name, String phone, String email, String company, String token) : base(id, name, phone, email, company, token)
+        public Buyer(String id, String username, String password, int type, String name, String phone, String email, String company, String token, String picture) : base(id,username, password, type, name, phone, email, company, token, picture)
         {
 
         }
