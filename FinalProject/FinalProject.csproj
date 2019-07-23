@@ -202,6 +202,8 @@
     <Compile Include="lib\Authenticate.cs" />
     <Compile Include="lib\Buyer.cs" />
     <Compile Include="lib\Database.cs" />
+    <Compile Include="lib\Enquiry.cs" />
+    <Compile Include="lib\Product.cs" />
     <Compile Include="lib\Seller.cs" />
     <Compile Include="Login.aspx.cs">
       <DependentUpon>Login.aspx</DependentUpon>

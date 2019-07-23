@@ -13,7 +13,30 @@ namespace FinalProject.lib
 
         }
 
+        public List<Product> getProductsForSale()
+        {
+            Database db = new Database();
+            return db.getProductsForSale();
+        }
 
+        public bool buyProduct(Product product)
+        {
+            Database db = new Database();
+            if (db.buyProduct(this, product))
+            {
+                return true;
+            }
+            return false;
+        }
 
+        public bool contactSeller(Enquiry enq)
+        {
+            Database db = new Database();
+            if (db.createEnquiry(this, enq))
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

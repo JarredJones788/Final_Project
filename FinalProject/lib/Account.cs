@@ -129,11 +129,21 @@ namespace FinalProject.lib
             Database db = new Database();
             return db.uploadProfileImage(this.id);
         }
-
-        public bool createAccount()
+        public int createAccount()
         {
             Database db = new Database();
             return db.createAccount(this);
         }
+        public List<Product> getMyProducts()
+        {
+            Database db = new Database();
+            return db.getMyProducts(this);
+        }
+        public List<Enquiry> getMyEnquiries()
+        {
+            Database db = new Database();
+            return db.getMyEnquiries(this);
+        }
+
     }
 }

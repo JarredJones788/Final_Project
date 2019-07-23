@@ -10,7 +10,7 @@ namespace FinalProject.lib
 {
     public class Authenticate
     {
-
+        
         public Account login(String username, String password)
         {
             Database db = new Database();

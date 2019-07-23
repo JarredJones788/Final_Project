@@ -13,7 +13,47 @@ namespace FinalProject.lib
 
         }
 
+        public bool addProduct(Product product)
+        {
+            Database db = new Database();
+            if (db.addProduct(product))
+            {
+                return true;
+            }
 
+            return false;
+        }
+
+        public bool deleteProduct(Product product)
+        {
+            Database db = new Database();
+            if (db.deleteProduct(this, product))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool updateProduct(Product product)
+        {
+            Database db = new Database();
+            if (db.updateProduct(this, product))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool replyToEnquiry(Enquiry enq)
+        {
+            Database db = new Database();
+            if (db.replyToEnquiry(this, enq))
+            {
+                return true;
+            }
+
+            return false;
+        }
 
     }
 }
