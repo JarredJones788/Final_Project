@@ -15,7 +15,8 @@
                     <label for="password">Password</label>
                     <asp:TextBox ID="password" TextMode="password" class="form-control" placeholder="Password" runat="server" />
                 </div>
-                <asp:Button ID="ButtonLogin" runat="server" Text="Submit" OnClick="ButtonLogin_Click" />
+                <asp:Button class="btn btn-primary btn-lg" ID="ButtonLogin" runat="server" Text="Login" OnClick="ButtonLogin_Click" />
+                <asp:Button class="btn btn-lg" ID="ButtonRegister" runat="server" Text="Register" OnClick="ButtonRegister_Click" />
             </div>
         </div>
     </div>
