@@ -38,8 +38,14 @@ namespace FinalProject
             else
             {
                 status.Text = "Invalid Login";
+                status.ForeColor = System.Drawing.Color.Red;
             }
 
         }
+        protected void ButtonRegister_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("https://localhost:44309/Register");
+        }
     }
+
 }
