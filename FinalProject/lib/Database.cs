@@ -14,7 +14,7 @@ namespace FinalProject.lib
 
         public Database()
         {
-            this.conn = new SqlConnection(@"Server=JARRED\PROJECTSQL;Database=Project;User Id=sa; Password=123;");
+            this.conn = new SqlConnection(@"Server=LAPTOP-AB9DVTVR\DITMARSSQL;Database=Project;User Id=sa; Password=bEeR2D1X;");
             this.conn.Open();
         }
 
