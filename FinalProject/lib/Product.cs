@@ -14,8 +14,10 @@ namespace FinalProject.lib
         private double price;
         private String description;
         private String name;
+        private String sellerName;
+        private String company;
 
-        public Product(String id, String sellerId, String buyerId, String category, double price, String description, String name)
+        public Product(String id, String sellerId, String buyerId, String category, double price, String description, String name, String sellerName, String company)
         {
             this.id = id;
             this.sellerId = sellerId;
@@ -24,6 +26,8 @@ namespace FinalProject.lib
             this.price = price;
             this.description = description;
             this.name = name;
+            this.sellerName = sellerName;
+            this.company = company;
         }
         public Product(String id)
         {
@@ -57,6 +61,14 @@ namespace FinalProject.lib
         public String getName()
         {
             return this.name;
+        }
+        public String getSellerName()
+        {
+            return this.sellerName;
+        }
+        public String getCompany()
+        {
+            return this.company;
         }
 
 

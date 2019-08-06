@@ -15,6 +15,10 @@ namespace FinalProject
     {
 
         Account user;
+        List<Product> products;
+        List<Enquiry> enqs;
+        List<Product> buyable;
+
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -25,17 +29,318 @@ namespace FinalProject
                 Account user = auth.checkSession(myCookie.Value.ToString());
                 if (user != null)
                 {
+
                     this.user = user;
-                    profilePic.ImageUrl = "/Uploads/"+user.getPicture()+".png";
-                    profilePic.Width = 100;
-                    profilePic.Height = 100;
 
                     if (user.GetType() == typeof(Seller))
                     {
-                        AccountStatus.Text = "Account Type: Seller";
+                        sellerPanel.Visible = true;
+                        this.products = user.getMyProducts();
+                        if (this.products != null)
+                        {
+                            foreach (var p in this.products)
+                            {
+                                TableRow row = new TableRow();
+                                TableCell cell1 = new TableCell();
+                                TableCell cell2 = new TableCell();
+                                TableCell cell3 = new TableCell();
+                                TableCell cell4 = new TableCell();
+                                TableCell cell5 = new TableCell();
+
+                                Button btn = new Button();
+                                btn.Text = "Edit";
+                                btn.CssClass = "btn btn-primary";
+                                btn.CommandArgument = p.getId();
+                                btn.Click += new EventHandler(EditProduct_Click);
+
+                                cell1.Text = p.getName();
+                                cell2.Text = p.getCategory();
+                                cell3.Text = p.getPrice().ToString();
+                                cell4.Text = p.getDescription();
+                                cell5.Controls.Add(btn);
+
+                                row.Cells.Add(cell1);
+                                row.Cells.Add(cell2);
+                                row.Cells.Add(cell3);
+                                row.Cells.Add(cell4);
+                                row.Cells.Add(cell5);
+                                yourProducts.Rows.Add(row);
+                            }
+
+                             this.enqs = user.getMyEnquiries();
+
+                            foreach (var i in this.enqs)
+                            {
+                                TableRow row = new TableRow();
+                                TableCell cell1 = new TableCell();
+                                TableCell cell2 = new TableCell();
+                                TableCell cell3 = new TableCell();
+                                cell1.Text = i.getSubject();
+                                cell2.Text = i.getQuestions();
+                                cell3.Text = i.getResponse();
+                                if (cell3.Text == "")
+                                {
+                                    Button btn = new Button();
+                                    btn.Text = "Respond";
+                                    btn.CssClass = "btn btn-primary";
+                                    btn.CommandArgument = i.getId();
+                                    btn.Click += new EventHandler(EnquiryResponse_Click);
+                                    cell3.Controls.Add(btn);
+                                }
+
+                                row.Cells.Add(cell1);
+                                row.Cells.Add(cell2);
+                                row.Cells.Add(cell3);
+                                yourEnquiries.Rows.Add(row);
+                            }
+
+                        }
+
                     } else
                     {
-                        AccountStatus.Text = "Account Type: Buyer";
+                        buyerPanel.Visible = true;
+
+                        this.enqs = user.getMyEnquiries();
+
+                        foreach (var i in this.enqs)
+                        {
+                            TableRow row = new TableRow();
+                            TableCell cell1 = new TableCell();
+                            TableCell cell2 = new TableCell();
+                            TableCell cell3 = new TableCell();
+                            cell1.Text = i.getSubject();
+                            cell2.Text = i.getQuestions();
+                            cell3.Text = i.getResponse();
+
+
+                            row.Cells.Add(cell1);
+                            row.Cells.Add(cell2);
+                            row.Cells.Add(cell3);
+                            buyerEnquiries.Rows.Add(row);
+                        }
+
+                        Buyer buyer = (Buyer)user;
+                        List<Product> products = buyer.getProductsForSale();
+                        this.buyable = products;
+                        if (products != null)
+                        {
+                            productsForSale.Rows.Clear();
+                            drawTableHeader();
+
+                            switch (searchFilter.SelectedValue)
+                            {
+                                case "category":
+                                    foreach (var p in this.buyable)
+                                    {
+                                        if (p.getCategory().ToUpper().Contains(productSearchBar.Text.ToUpper()))
+                                        {
+                                            TableRow row = new TableRow();
+                                            TableCell cell1 = new TableCell();
+                                            TableCell cell2 = new TableCell();
+                                            TableCell cell3 = new TableCell();
+                                            TableCell cell4 = new TableCell();
+                                            TableCell cell5 = new TableCell();
+
+                                            Button btn = new Button();
+                                            btn.Text = "Buy";
+                                            btn.CssClass = "btn btn-primary";
+                                            btn.CommandArgument = p.getId();
+                                            btn.Click += new EventHandler(ButtonBuyProduct_Click);
+
+                                            Button btn1 = new Button();
+                                            btn1.Text = "Enquire";
+                                            btn1.CssClass = "btn btn-primary";
+                                            btn1.CommandArgument = p.getSellerId();
+                                            btn1.Click += new EventHandler(enquireModal_Click);
+
+                                            cell1.Text = p.getName();
+                                            cell2.Text = p.getCategory();
+                                            cell3.Text = p.getPrice().ToString();
+                                            cell4.Text = p.getDescription();
+                                            cell5.Controls.Add(btn);
+                                            cell5.Controls.Add(btn1);
+
+                                            row.Cells.Add(cell1);
+                                            row.Cells.Add(cell2);
+                                            row.Cells.Add(cell3);
+                                            row.Cells.Add(cell4);
+                                            row.Cells.Add(cell5);
+                                            productsForSale.Rows.Add(row);
+                                        }
+                                    }
+
+
+                                    break;
+                                case "seller":
+                                    foreach (var p in this.buyable)
+                                    {
+                                        if (p.getSellerName().ToUpper().Contains(productSearchBar.Text.ToUpper()))
+                                        {
+                                            TableRow row = new TableRow();
+                                            TableCell cell1 = new TableCell();
+                                            TableCell cell2 = new TableCell();
+                                            TableCell cell3 = new TableCell();
+                                            TableCell cell4 = new TableCell();
+                                            TableCell cell5 = new TableCell();
+
+                                            Button btn = new Button();
+                                            btn.Text = "Buy";
+                                            btn.CssClass = "btn btn-primary";
+                                            btn.CommandArgument = p.getId();
+                                            btn.Click += new EventHandler(ButtonBuyProduct_Click);
+
+                                            Button btn1 = new Button();
+                                            btn1.Text = "Enquire";
+                                            btn1.CssClass = "btn btn-primary";
+                                            btn1.CommandArgument = p.getSellerId();
+                                            btn1.Click += new EventHandler(enquireModal_Click);
+
+                                            cell1.Text = p.getName();
+                                            cell2.Text = p.getCategory();
+                                            cell3.Text = p.getPrice().ToString();
+                                            cell4.Text = p.getDescription();
+                                            cell5.Controls.Add(btn);
+                                            cell5.Controls.Add(btn1);
+
+                                            row.Cells.Add(cell1);
+                                            row.Cells.Add(cell2);
+                                            row.Cells.Add(cell3);
+                                            row.Cells.Add(cell4);
+                                            row.Cells.Add(cell5);
+                                            productsForSale.Rows.Add(row);
+                                        }
+                                    }
+
+
+                                    break;
+                                case "company":
+                                    foreach (var p in this.buyable)
+                                    {
+                                        if (p.getCompany().ToUpper().Contains(productSearchBar.Text.ToUpper()))
+                                        {
+                                            TableRow row = new TableRow();
+                                            TableCell cell1 = new TableCell();
+                                            TableCell cell2 = new TableCell();
+                                            TableCell cell3 = new TableCell();
+                                            TableCell cell4 = new TableCell();
+                                            TableCell cell5 = new TableCell();
+
+                                            Button btn = new Button();
+                                            btn.Text = "Buy";
+                                            btn.CssClass = "btn btn-primary";
+                                            btn.CommandArgument = p.getId();
+                                            btn.Click += new EventHandler(ButtonBuyProduct_Click);
+
+                                            Button btn1 = new Button();
+                                            btn1.Text = "Enquire";
+                                            btn1.CssClass = "btn btn-primary";
+                                            btn1.CommandArgument = p.getSellerId();
+                                            btn1.Click += new EventHandler(enquireModal_Click);
+
+                                            cell1.Text = p.getName();
+                                            cell2.Text = p.getCategory();
+                                            cell3.Text = p.getPrice().ToString();
+                                            cell4.Text = p.getDescription();
+                                            cell5.Controls.Add(btn);
+                                            cell5.Controls.Add(btn1);
+
+                                            row.Cells.Add(cell1);
+                                            row.Cells.Add(cell2);
+                                            row.Cells.Add(cell3);
+                                            row.Cells.Add(cell4);
+                                            row.Cells.Add(cell5);
+                                            productsForSale.Rows.Add(row);
+                                        }
+                                    }
+
+
+                                    break;
+                                case "product":
+                                    foreach (var p in this.buyable)
+                                    {
+                                        if (p.getName().ToUpper().Contains(productSearchBar.Text.ToUpper()))
+                                        {
+                                            TableRow row = new TableRow();
+                                            TableCell cell1 = new TableCell();
+                                            TableCell cell2 = new TableCell();
+                                            TableCell cell3 = new TableCell();
+                                            TableCell cell4 = new TableCell();
+                                            TableCell cell5 = new TableCell();
+
+                                            Button btn = new Button();
+                                            btn.Text = "Buy";
+                                            btn.CssClass = "btn btn-primary";
+                                            btn.CommandArgument = p.getId();
+                                            btn.Click += new EventHandler(ButtonBuyProduct_Click);
+
+                                            Button btn1 = new Button();
+                                            btn1.Text = "Enquire";
+                                            btn1.CssClass = "btn btn-primary";
+                                            btn1.CommandArgument = p.getSellerId();
+                                            btn1.Click += new EventHandler(enquireModal_Click);
+
+                                            cell1.Text = p.getName();
+                                            cell2.Text = p.getCategory();
+                                            cell3.Text = p.getPrice().ToString();
+                                            cell4.Text = p.getDescription();
+                                            cell5.Controls.Add(btn);
+                                            cell5.Controls.Add(btn1);
+
+                                            row.Cells.Add(cell1);
+                                            row.Cells.Add(cell2);
+                                            row.Cells.Add(cell3);
+                                            row.Cells.Add(cell4);
+                                            row.Cells.Add(cell5);
+                                            productsForSale.Rows.Add(row);
+                                        }
+                                    }
+
+
+                                    break;
+                                default:
+                                    foreach (var p in products)
+                                    {
+                                        TableRow row = new TableRow();
+                                        TableCell cell1 = new TableCell();
+                                        TableCell cell2 = new TableCell();
+                                        TableCell cell3 = new TableCell();
+                                        TableCell cell4 = new TableCell();
+                                        TableCell cell5 = new TableCell();
+
+                                        Button btn = new Button();
+                                        btn.Text = "Buy";
+                                        btn.CssClass = "btn btn-primary";
+                                        btn.CommandArgument = p.getId();
+                                        btn.Click += new EventHandler(ButtonBuyProduct_Click);
+
+                                        Button btn1 = new Button();
+                                        btn1.Text = "Enquire";
+                                        btn1.CssClass = "btn btn-primary";
+                                        btn1.CommandArgument = p.getSellerId();
+                                        btn1.Click += new EventHandler(enquireModal_Click);
+
+                                        cell1.Text = p.getName();
+                                        cell2.Text = p.getCategory();
+                                        cell3.Text = p.getPrice().ToString();
+                                        cell4.Text = p.getDescription();
+                                        cell5.Controls.Add(btn);
+                                        cell5.Controls.Add(btn1);
+
+                                        row.Cells.Add(cell1);
+                                        row.Cells.Add(cell2);
+                                        row.Cells.Add(cell3);
+                                        row.Cells.Add(cell4);
+                                        row.Cells.Add(cell5);
+                                        productsForSale.Rows.Add(row);
+                                    }
+                                    break;
+                            }
+
+                        }
+                        else
+                        {
+                            //error
+                        }
                     }
                     
                 }
@@ -51,6 +356,121 @@ namespace FinalProject
                 Debug.WriteLine("No session Found");
             }
         }
+        protected void drawTableHeader()
+        {
+
+            if (this.user != null)
+            {
+                TableRow row = new TableRow();
+                TableCell cell1 = new TableCell();
+                TableCell cell2 = new TableCell();
+                TableCell cell3 = new TableCell();
+                TableCell cell4 = new TableCell();
+                TableCell cell5 = new TableCell();
+
+
+                cell1.Text = "Name";
+                cell2.Text = "Category";
+                cell3.Text = "Price";
+                cell4.Text = "Description";
+                cell5.Text = "Actions";
+
+                row.Cells.Add(cell1);
+                row.Cells.Add(cell2);
+                row.Cells.Add(cell3);
+                row.Cells.Add(cell4);
+                row.Cells.Add(cell5);
+                productsForSale.Rows.Add(row);
+            }
+
+
+        }
+        
+        protected void EditProduct_Click(object sender, EventArgs e)
+        {
+
+            if (this.user != null)
+            {
+                if (this.products != null)
+                {
+                    Button btn = (Button)sender;
+
+                    foreach (var p in this.products)
+                    {
+                        if (p.getId() == btn.CommandArgument)
+                        {
+
+                            editProductId.Text = p.getId();
+                            editProductName.Text = p.getName();
+                            editProductCategory.Text = p.getCategory();
+                            editProductDescription.Text = p.getDescription();
+                            editProductPrice.Text = p.getPrice().ToString();
+                            break;
+                        }
+                    }
+
+
+                    ScriptManager.RegisterStartupScript(Page, Page.GetType(), "myProductsModal", "$('#myProductsModal').modal();", true);
+                    productModalUpdate.Update();
+
+                }
+            }
+
+
+        }
+        protected void EnquiryResponse_Click(object sender, EventArgs e)
+        {
+
+            if (this.user != null)
+            {
+                Button btn = (Button)sender;
+
+                foreach (var p in this.enqs)
+                {
+                    if (p.getId() == btn.CommandArgument)
+                    {
+
+                        respondId.Text = p.getId();
+                        respondQuestion.Text = p.getQuestions();
+                        respondSubject.Text = p.getSubject();
+                        break;
+                    }
+                }
+
+
+                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "respondModal", "$('#respondModal').modal();", true);
+                respondUpdate.Update();
+            }
+
+
+        }
+
+        protected void AddProductModal_Click(object sender, EventArgs e)
+        {
+
+            if (this.user != null)
+            {
+
+                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "addProductsModal", "$('#addProductsModal').modal();", true);
+                addProductUpdate.Update();
+            }
+
+
+        }
+
+        protected void enquireModal_Click(object sender, EventArgs e)
+        {
+            if (this.user != null)
+            {
+                Button btn = (Button)sender;
+                enquireSellerId.Text = btn.CommandArgument;
+
+                ScriptManager.RegisterStartupScript(Page, Page.GetType(), "enquireModal", "$('#enquireModal').modal();", true);
+                enquireUpdate.Update();
+            }
+
+
+        }
 
         //All Options
         protected void ButtonLogout_Click(object sender, EventArgs e)
@@ -63,167 +483,6 @@ namespace FinalProject
             }
         }
 
-        protected void ButtonUpdateInfo_Click(object sender, EventArgs e)
-        {
-            if (user != null)
-            {
-
-                //Update Password
-                String password = "555";
-
-                if (user.getPassword() != password)
-                {
-                    user.changePassword(password);
-                }
-
-
-                //Update Contact Info
-                String name = "Tommy123";
-                String phone = "123-123-1233";
-                String email = "123@hotmail.com";
-                String company = "123 Inc";
-
-                if (name != user.getName())
-                {
-                    user.setName(name);
-                }
-                if (phone != user.getPhone())
-                {
-                    user.setPhone(phone);
-                }
-                if (email != user.getEmail())
-                {
-                    user.setEmail(email);
-                }
-                if (name != user.getCompany())
-                {
-                    user.setCompany(company);
-                }
-
-                user.changeAccountInfo();
-            }
-        }
-
-        protected void ButtonUpload_Click(object sender, EventArgs e)
-        {
-            if (user != null)
-            {
-
-                if (FileUpload.HasFile)
-                {
-                    String fileId = user.uploadProfileImage();
-                    if (fileId != "error")
-                    {
-                        //Deletes old file
-                        String picId = user.getPicture();
-                        if (picId != "" || picId != null)
-                        {
-                            String deletePath = Path.Combine(Server.MapPath("~/Uploads"), picId + ".png");
-                            File.Delete(deletePath);
-                        }
-
-                        //Saves new file
-                        String uploadPath = Path.Combine(Server.MapPath("~/Uploads"), fileId + ".png"); //Path.GetExtension(FileUpload.FileName)
-                        FileUpload.PostedFile.SaveAs(uploadPath);
-                        profilePic.ImageUrl = "/Uploads/" + fileId + ".png";
-                        profilePic.Width = 100;
-                        profilePic.Height = 100;
-                    }
-                } else
-                {
-                    //No File
-                }
-            }
-        }
-
-        protected void ButtonRegister_Click(object sender, EventArgs e)
-        {
-            String username = "billy1";
-            String password = "123";
-            int type = 1;
-            String name = "Billy1";
-            String phone = "647-343-2342";
-            String email = "Bill@billy.com";
-            String company = "Billy Inc";
-
-            Account billy = new Account("", username, password, type, name, phone, email, company, "", ""); //Blank fields will be autofilled or not needed.
-            int status = billy.createAccount();
-
-            if (status == 0)
-            {
-                //Success
-            } else if (status == 1)
-            {
-                //username taken
-            } else if (status == 2)
-            {
-                //error
-            }
-        }
-
-        protected void ButtonGetMyProducts_Click(object sender, EventArgs e)
-        {
-            
-            if (user != null)
-            {
-                List<Product> products = user.getMyProducts();
-                if (products != null)
-                {
-                    foreach (var p in products)
-                    {
-                        TableRow row = new TableRow();
-                        TableCell cell1 = new TableCell();
-                        TableCell cell2 = new TableCell();
-                        TableCell cell3 = new TableCell();
-                        cell1.Text = p.getName();
-                        cell2.Text = p.getCategory();
-                        cell3.Text = p.getPrice().ToString();
- 
-
-                        row.Cells.Add(cell1);
-                        row.Cells.Add(cell2);
-                        row.Cells.Add(cell3);
-                        myTableProducts.Rows.Add(row);
-                    }
-                    
-                } else
-                {
-                    //error
-                }
-                 
-            }
-        }
-
-        protected void ButtonGetEnquiries_Click(object sender, EventArgs e)
-        {
-
-            if (user != null)
-            {
-                List<Enquiry> enqs = user.getMyEnquiries();
-
-                //test table
-                foreach (var i in enqs)
-                {
-                    TableRow row = new TableRow();
-                    TableCell cell1 = new TableCell();
-                    TableCell cell2 = new TableCell();
-                    TableCell cell3 = new TableCell();
-                    cell1.Text = i.getSubject();
-                    cell2.Text = i.getQuestions();
-                    cell3.Text = i.getResponse();
-                    if (cell3.Text == "")
-                    {
-                        cell3.Text = "<button onClick='alert()'>Open Response Modal</button>";
-                    }
-
-                    row.Cells.Add(cell1);
-                    row.Cells.Add(cell2);
-                    row.Cells.Add(cell3);
-                    myTable.Rows.Add(row);
-                }
-            }
-        }
-
         //Seller Options
         protected void ButtonAddProduct_Click(object sender, EventArgs e)
         {
@@ -233,15 +492,19 @@ namespace FinalProject
                 String id = "";
                 String sellerId = user.getId();
                 String buyerId = "";
-                String name = "CounterStrike GO";
-                String category = "Video Games";
-                String description = "";
-                double price = 60.00;
+                String name = addProductName.Text;
+                String category = addProductCategory.Text;
+                String description = addProductDescription.Text;
+                String sellerName = user.getName();
+                String company = user.getCompany();
+                double price = Double.Parse(addProductPrice.Text);
 
-                Product product = new Product(id, sellerId, buyerId, category, price, description, name);
+                Product product = new Product(id, sellerId, buyerId, category, price, description, name, sellerName, company);
                 Seller seller = (Seller)user;
 
                 seller.addProduct(product);
+
+                Response.Redirect(Request.RawUrl);
 
             }
         }
@@ -251,16 +514,16 @@ namespace FinalProject
             //Is a seller
             if (user != null && user.GetType() == typeof(Seller))
             {
-                String id = "1FFHNG1YSDRPVIFBH7Q8FL3U8MYX6W03WH8IWIPJBMF9RQ0OUS93EBNQLVJARD15";
+                String id = editProductId.Text;
                 Product product = new Product(id);
                 Seller seller = (Seller)user;
 
                 if (seller.deleteProduct(product))
                 {
-                    Debug.WriteLine("DELETE");
+                    Response.Redirect(Request.RawUrl);
                 } else
                 {
-                    Debug.WriteLine("ERROR");
+                    Debug.WriteLine("ERROR DELETING PRODUCT");
                 }
                  
             }
@@ -271,18 +534,19 @@ namespace FinalProject
             //Is a seller
             if (user != null && user.GetType() == typeof(Seller))
             {
-                String id = "F0XMVSOSFAWY3RJ5EVPNDQBNCU1QR4RW894VR40GUJK76AJA20ZNLE5YYKJB07AL";
-                String name = "New Name";
-                String category = "New Category";
-                String description = "New Desc";
-                double price = 5.00;
+                String id = editProductId.Text;
+                String name = editProductName.Text;
+                String category = editProductCategory.Text;
+                String description = editProductDescription.Text;
+                double price = Double.Parse(editProductPrice.Text);
+
                 
-                Product product = new Product(id, "", "", category, price, description, name);
+                Product product = new Product(id, "", "", category, price, description, name, "", "");
 
                 Seller seller = (Seller)user;
                 if (seller.updateProduct(product))
                 {
-                    //completed
+                    Response.Redirect(Request.RawUrl);
                 } else
                 {
                     //error
@@ -297,8 +561,8 @@ namespace FinalProject
             if (user != null && user.GetType() == typeof(Seller))
             {
 
-                String enquiryId = "ZZ4AFATA4OYOV1M7YP7GHK1PPGMI4JZK3V61D5S9369ACM1VH903JWTO8PU8XLFV";
-                String response = "Hello this is a response";
+                String enquiryId = respondId.Text;
+                String response = responseText.Text;
   
                 Enquiry enq = new Enquiry(enquiryId, response);
 
@@ -306,6 +570,7 @@ namespace FinalProject
                 if (seller.replyToEnquiry(enq))
                 {
                     Debug.WriteLine("Replied");
+                    Response.Redirect(Request.RawUrl);
                 }
                 else
                 {
@@ -315,36 +580,14 @@ namespace FinalProject
         }
 
         //Buyer Options
-        protected void ButtonForSaleProducts_Click(object sender, EventArgs e)
-        {
-            //Is a Buyer
-            if (user != null && user.GetType() == typeof(Buyer))
-            {
-                Buyer buyer = (Buyer)user;
-                List<Product> products = buyer.getProductsForSale();
-                if (products != null)
-                {
-                    foreach (var p in products)
-                    {
-                        Debug.WriteLine(p.getPrice());
-                    }
-
-                }
-                else
-                {
-                    //error
-                }
-
-            }
-        }
-
         protected void ButtonBuyProduct_Click(object sender, EventArgs e)
         {
             //Is a Buyer
             if (user != null && user.GetType() == typeof(Buyer))
             {
 
-                String productId = "GVFTHBY6URMRU50D0R1J8TNCOYA8IJKCEIMBKB40W0QWLE9SJ98PG25WHDFSAZXL";
+                Button btn = (Button)sender;
+                String productId = btn.CommandArgument;
 
                 Product product = new Product(productId);  
 
@@ -353,6 +596,7 @@ namespace FinalProject
                 if (buyer.buyProduct(product))
                 {
                     Debug.WriteLine("Bought");
+                    Response.Redirect(Request.RawUrl);
                 } else
                 {
                     //err
@@ -368,10 +612,10 @@ namespace FinalProject
             if (user != null && user.GetType() == typeof(Buyer))
             {
 
-                String sellerId = ""; 
+                String sellerId = enquireSellerId.Text; 
                 String buyerId = user.getId();
-                String subject = "Question";
-                String questions = "Hey, is the disk scratched?";
+                String subject = addSubject.Text;
+                String questions = addQuestion.Text;
                 String response = ""; //leave blank when creating
 
                 Enquiry enq = new Enquiry("", sellerId, buyerId, subject, questions, response);
@@ -380,6 +624,7 @@ namespace FinalProject
                 if (buyer.contactSeller(enq))
                 {
                     Debug.WriteLine("Created");
+                    Response.Redirect(Request.RawUrl);
                 } else
                 {
                     //error

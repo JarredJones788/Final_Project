@@ -204,7 +204,7 @@ namespace FinalProject.lib
 
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = this.conn;
-                cmd.CommandText = "INSERT INTO products (id, sellerId, buyerId, category, price, description, name) VALUES(@Id, @SellerId, @BuyerId, @Category, @Price, @Description, @Name)";
+                cmd.CommandText = "INSERT INTO products (id, sellerId, buyerId, category, price, description, name, sellerName, company) VALUES(@Id, @SellerId, @BuyerId, @Category, @Price, @Description, @Name, @SellerName, @Company)";
                 cmd.Prepare();
 
                 cmd.Parameters.AddWithValue("@Id", productId);
@@ -214,6 +214,8 @@ namespace FinalProject.lib
                 cmd.Parameters.AddWithValue("@Price", product.getPrice());
                 cmd.Parameters.AddWithValue("@Description", product.getDescription());
                 cmd.Parameters.AddWithValue("@Name", product.getName());
+                cmd.Parameters.AddWithValue("@SellerName", product.getSellerName());
+                cmd.Parameters.AddWithValue("@Company", product.getCompany());
                 cmd.ExecuteNonQuery();
 
                 this.conn.Close();
@@ -264,7 +266,7 @@ namespace FinalProject.lib
 
                 SqlCommand cmd = new SqlCommand();
                 cmd.Connection = this.conn;
-                cmd.CommandText = "UPDATE products SET category = @Category, price = @Price, description = @Description, name = @Name WHERE id = @Id AND sellerId = @SellerId";
+                cmd.CommandText = "UPDATE products SET category = @Category, price = @Price, description = @Description, name = @Name, sellerName = @SellerName, company = @Company WHERE id = @Id AND sellerId = @SellerId";
                 cmd.Prepare();
 
                 cmd.Parameters.AddWithValue("@Category", product.getCategory());
@@ -273,6 +275,8 @@ namespace FinalProject.lib
                 cmd.Parameters.AddWithValue("@Name", product.getName());
                 cmd.Parameters.AddWithValue("@Id", product.getId());
                 cmd.Parameters.AddWithValue("@SellerId", account.getId());
+                cmd.Parameters.AddWithValue("@SellerName", account.getName());
+                cmd.Parameters.AddWithValue("@Company", account.getCompany());
 
                 cmd.ExecuteNonQuery();
 
@@ -336,7 +340,7 @@ namespace FinalProject.lib
 
                 while (dr.Read())
                 {
-                    myProducts.Add(new Product(dr.GetString(0), dr.GetString(1), dr.GetString(2), dr.GetString(3), dr.GetDouble(4), dr.GetString(5), dr.GetString(6)));
+                    myProducts.Add(new Product(dr.GetString(0), dr.GetString(1), dr.GetString(2), dr.GetString(3), dr.GetDouble(4), dr.GetString(5), dr.GetString(6), dr.GetString(7), dr.GetString(8)));
                 }
 
                 dr.Close();
@@ -363,7 +367,7 @@ namespace FinalProject.lib
 
                 while (dr.Read())
                 {
-                    allProducts.Add(new Product(dr.GetString(0), dr.GetString(1), dr.GetString(2), dr.GetString(3), dr.GetDouble(4), dr.GetString(5), dr.GetString(6)));
+                    allProducts.Add(new Product(dr.GetString(0), dr.GetString(1), dr.GetString(2), dr.GetString(3), dr.GetDouble(4), dr.GetString(5), dr.GetString(6), dr.GetString(7), dr.GetString(8)));
                 }
 
                 dr.Close();
