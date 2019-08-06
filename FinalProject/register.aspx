@@ -18,6 +18,7 @@
                     <label for="email">Email</label>
                     <asp:TextBox ID="email" class="form-control" runat="server" />
                     <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" ForeColor="Red" ControlToValidate="email" Display="Dynamic" Text="Required!"></asp:RequiredFieldValidator>
+                    <asp:RegularExpressionValidator ID="revEmail" ControlToValidate="email" ErrorMessage="Not a valid email." Display="dynamic" runat="server" ValidationExpression="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*" ForeColor="Red"></asp:RegularExpressionValidator>
                 </div>
                 <div class="form-group">
                     <label for="phone">Phone</label>
