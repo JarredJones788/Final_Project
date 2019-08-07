@@ -18,6 +18,7 @@ namespace FinalProject
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            //authenticating user, if their session is not valid, redirect them to login page
             Authenticate auth = new Authenticate();
             HttpCookie myCookie = Request.Cookies["token"];
             if (myCookie != null)
@@ -35,15 +36,18 @@ namespace FinalProject
             }
         }
 
+        //method that changes the password of a user
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
             if (user != null)
             {
                 String password = txtConfirmPassword.Text;
 
+                //only update the password in the database if it is different then what is currently in the db
                 if (user.getPassword() != password)
                 {
                     user.changePassword(password);
+                    //update the label to provide some insight to the user if their action was succesful or not
                     if (user.changePassword(password))
                     {
                         lblSubmit.Text = "Password changed successfully";
