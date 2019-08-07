@@ -3,6 +3,7 @@
 <asp:Content ID="bodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <h2>Profile Data</h2>
     <hr />
+    <!--Form elements to display the user data in their profile page -->
     <div class="form-group">
         <asp:Image ID="imgProfilePic" Height="100" Width="100" runat="server"/>
         <asp:FileUpload ID="uplProfilePic" runat="server" Visible="false"/>
@@ -37,6 +38,7 @@
         <asp:RegularExpressionValidator ID="revEmail" ControlToValidate="txtEmail" ErrorMessage="Not a valid email." Display="dynamic" runat="server" ValidationExpression="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*" ForeColor="Red"></asp:RegularExpressionValidator>
     </div>
 
+    <!--This should only be displayed if the user is of type seller -->
     <div class="form-group">
         <asp:Label ID="lblCompany" Text="Company: " AssociatedControlID="txtCompany" runat="server">
             <asp:TextBox ID="txtCompany" runat="server" ReadOnly="true"></asp:TextBox>
@@ -51,6 +53,7 @@
     <br /><br />
     <asp:button id="ButtonLogout" class="btn btn-danger" runat="server" onclick="ButtonLogout_Click" text="Logout" />
     
+    <!--Simple table with 4 columns to display the users purchase history, should only be displayed if the user is of type buyer -->
     <div ID="divPurchaseHistory" runat="server">
         <hr />
         <h3>Purchase History</h3>
