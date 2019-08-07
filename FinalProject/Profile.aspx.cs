@@ -15,22 +15,24 @@ namespace FinalProject
 {
     public partial class Profile : System.Web.UI.Page
     {
-
+        //global variable to store the user data in so all events have access
         Account user;
 
         protected void Page_Load(object sender, EventArgs e)
         {
-
+         
                 Authenticate auth = new Authenticate();
                 HttpCookie myCookie = Request.Cookies["token"];
 
                 if (myCookie != null)
                 {
+                    //authenticate the user with the cookie, this will return either a seller or a buyer
                     Account user = auth.checkSession(myCookie.Value.ToString());
                     if (user != null)
                     {
                         this.user = user;
 
+                        //when the page is posting back to itself make sure that the fields stay as the edited values
                         if (!IsPostBack)
                         {
                             imgProfilePic.ImageUrl = "/Uploads/" + user.getPicture() + ".png";
@@ -47,10 +49,12 @@ namespace FinalProject
 
                         if (user.GetType() == typeof(Buyer))
                         {
+                            //buyers dont want to see company field, but do want to see purchsae history
                             lblCompany.Visible = false;
                             txtCompany.Visible = false;
                             divPurchaseHistory.Visible = true;
 
+                            //getting list of products from the db that this user has purchased to populate table
                             List<Product> products = user.getMyProducts();
                             if (products != null)
                             {
@@ -76,6 +80,7 @@ namespace FinalProject
                         }
                         else
                         {
+                            //sellers do want to see the company field
                             divPurchaseHistory.Visible = false;
                             txtCompany.Visible = true;
                             txtCompany.Text = user.getCompany();
@@ -84,6 +89,7 @@ namespace FinalProject
                     }
                     else
                     {
+                        //if the session is not valid then the user is redirected to login
                         Response.Redirect("https://localhost:44309/Login");
                     }
 
@@ -91,13 +97,14 @@ namespace FinalProject
                 }
                 else
                 {
+                    //if the session is not valid then the user is redirected to login
                     Response.Redirect("https://localhost:44309/Login");
                 }
             
             
         }
 
-
+        //this function sets all the textboxes from read only to editable so the user can make changes, also hides the other buttons and makes submit button visible
         protected void btnEdit_Click(object sender, EventArgs e)
         {
             txtUsername.ReadOnly = false;
@@ -110,8 +117,10 @@ namespace FinalProject
             btnDelete.Visible = false;
         }
 
+        //this function will save any edited data in the form to the db
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
+            //reset the button view state
             btnEdit.Visible = true;
             btnSubmit.Visible = false;
 
@@ -155,7 +164,8 @@ namespace FinalProject
                         user.setCompany(company);
                     }
                 }
-
+                
+                //only if the data has changed do we edit the user properties
                 if (username != user.getUsername())
                 {
                     user.setUsername(username);
@@ -181,6 +191,7 @@ namespace FinalProject
                 Debug.Print("user is null");
             }
 
+            //reset the fields to be read only and show proper buttons
             txtUsername.ReadOnly = true;
             txtName.ReadOnly = true;
             txtEmail.ReadOnly = true;
@@ -190,6 +201,8 @@ namespace FinalProject
             uplProfilePic.Visible = false;
             btnDelete.Visible = true;
         }
+        
+        //deletes a user from the database and redirects them to the login page
         protected void btnDelete_Click(object sender, EventArgs e)
         {
             if (user != null)
@@ -199,6 +212,7 @@ namespace FinalProject
             }
         }
 
+        //removes the user token and redirects to the login page, logging the user out
         protected void ButtonLogout_Click(object sender, EventArgs e)
         {
             Authenticate auth = new Authenticate();
@@ -206,6 +220,7 @@ namespace FinalProject
             Response.Redirect("https://localhost:44309/Login");
         }
 
+        //redirects the user to the change password page
         protected void btnChangePassword_Click(object sender, EventArgs e)
         {
             Response.Redirect("https://localhost:44309/ChangePassword");
