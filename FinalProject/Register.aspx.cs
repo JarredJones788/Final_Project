@@ -15,6 +15,7 @@ namespace FinalProject
     public partial class Register : System.Web.UI.Page
     {
 
+        //Checks user session when page loads.
         protected void Page_Load(object sender, EventArgs e)
         {
             Authenticate auth = new Authenticate();
@@ -30,6 +31,7 @@ namespace FinalProject
            
         }
 
+        //Registers a new account for the user. Checks if username is already taken.
         protected void ButtonRegister_Click(object sender, EventArgs e)
         {
 
@@ -44,7 +46,7 @@ namespace FinalProject
 
             Account acc = new Account("", user, pass, type, name, cellPhone, userEmail, userCompany, "", "");
             int resStatus = acc.createAccount();
-            Debug.WriteLine(resStatus);
+
             if (resStatus == 0)
             {
                 Response.Redirect("https://localhost:44309/Login");

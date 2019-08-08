@@ -15,6 +15,8 @@ namespace FinalProject
 {
     public partial class Login : System.Web.UI.Page
     {
+
+        //Checks session when the page loads.
         protected void Page_Load(object sender, EventArgs e)
         {
             Authenticate auth = new Authenticate();
@@ -29,6 +31,7 @@ namespace FinalProject
             }
         }
 
+        //Checks login details when the user clicks the login button.
         protected void ButtonLogin_Click(object sender, EventArgs e)
         {
             Authenticate auth = new Authenticate();
@@ -45,6 +48,7 @@ namespace FinalProject
             }
 
         }
+        //Sends user to register page.
         protected void ButtonRegister_Click(object sender, EventArgs e)
         {
             Response.Redirect("https://localhost:44309/Register");

@@ -15,12 +15,14 @@ namespace FinalProject.lib
         private SqlConnection conn;
         private SqlDataReader reader;
 
+        //Constrcutor with a connection string.
         public Database()
         {
             this.conn = new SqlConnection(@"Server=JARRED\PROJECTSQL;Database=Project;User Id=sa; Password=123;");
             this.conn.Open();
         }
 
+        //Return data based on the query string given.
         public SqlDataReader getData(String query)
         {
             try
@@ -40,6 +42,7 @@ namespace FinalProject.lib
             }
         }
 
+        //Upon a good login this function will be called to update the user session token.
         public bool updateUserToken(String token, String id)
         {
             try
@@ -66,6 +69,7 @@ namespace FinalProject.lib
             }
         }
 
+        //Updates the users password.
         public bool updateUserPassword(String newPassword, String id)
         {
             try
@@ -91,6 +95,7 @@ namespace FinalProject.lib
             }
         }
 
+        //Updates users account info
         public bool updateAccountInfo(Account account)
         {
             try
@@ -119,6 +124,7 @@ namespace FinalProject.lib
             }
         }
 
+        //Saves a Refrence of the users profile picture. So it can be accesed in the file system.
         public string uploadProfileImage(String id)
         {
 
@@ -148,6 +154,7 @@ namespace FinalProject.lib
             }
         }
 
+        //Creates a new account.
         public int createAccount(Account account)
         {
 
@@ -170,7 +177,7 @@ namespace FinalProject.lib
                 {
                     SqlCommand cmd = new SqlCommand();
                     cmd.Connection = this.conn;
-                    cmd.CommandText = "INSERT INTO users (id, username, password, type, name, phone, email, company) VALUES(@Id, @Username, @Password, @Type, @Name, @Phone, @Email, @Company)";
+                    cmd.CommandText = "INSERT INTO users (id, username, password, type, name, phone, email, company, token, picture) VALUES(@Id, @Username, @Password, @Type, @Name, @Phone, @Email, @Company, '', '')";
                     cmd.Prepare();
 
                     cmd.Parameters.AddWithValue("@Id", userId);
@@ -198,6 +205,7 @@ namespace FinalProject.lib
             }
         }
 
+        //Adds a new product for the seller.
         public bool addProduct(Product product)
         {
             String productId = this.createRandomId();
@@ -234,6 +242,7 @@ namespace FinalProject.lib
             }
         }
 
+        //Deletes product for the seller.
         public bool deleteProduct(Account account, Product product)
         {
             try
@@ -262,6 +271,7 @@ namespace FinalProject.lib
             }
         }
 
+        //Deletes the account.
         public bool deleteAccount(Account account)
         {
             try
@@ -289,6 +299,7 @@ namespace FinalProject.lib
             }
         }
 
+        //Seller can update their product.
         public bool updateProduct(Account account, Product product)
         {
             try
@@ -323,6 +334,7 @@ namespace FinalProject.lib
             }
         }
 
+        //Buyer can buy products for sale.
         public bool buyProduct(Account account, Product product)
         {
 
@@ -352,6 +364,7 @@ namespace FinalProject.lib
             }
         }
 
+        //Return a list of products for the user calling this function.
         public List<Product> getMyProducts(Account account)
         {
 
@@ -386,6 +399,7 @@ namespace FinalProject.lib
             }
         }
 
+        //Returns the products for sale for the buyer.
         public List<Product> getProductsForSale()
         {
 
@@ -413,6 +427,7 @@ namespace FinalProject.lib
             }
         }
 
+        //Create an enquiry and send to the seller.
         public bool createEnquiry(Account account, Enquiry enq)
         {
             String enquiryId = this.createRandomId();
@@ -446,6 +461,7 @@ namespace FinalProject.lib
             }
         }
 
+        //Seller can reply to enquiry
         public bool replyToEnquiry(Account account, Enquiry enq)
         {
 
@@ -476,6 +492,7 @@ namespace FinalProject.lib
             }
         }
 
+        //Gets all enquiries depending on the type of the account.
         public List<Enquiry> getMyEnquiries(Account account)
         {
 
@@ -513,6 +530,7 @@ namespace FinalProject.lib
             }
         }
 
+        //Creates a random unique string.
         private String createRandomId()
         {
             Random random = new Random();

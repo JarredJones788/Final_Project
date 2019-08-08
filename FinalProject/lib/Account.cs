@@ -107,6 +107,7 @@ namespace FinalProject.lib
             this.company = company;
         }
 
+        //Both users can change there password.
         public bool changePassword(String newPassword)
         {
             Database db = new Database();
@@ -117,6 +118,8 @@ namespace FinalProject.lib
 
             return false;
         }
+
+        //Allows both users to change there account info.
         public bool changeAccountInfo()
         {
             Database db = new Database();
@@ -127,26 +130,36 @@ namespace FinalProject.lib
 
             return false;
         }
+
+        //Allows both users to upload a profile pic.
         public String uploadProfileImage()
         {
             Database db = new Database();
             return db.uploadProfileImage(this.id);
         }
+
+        //Creates this account.
         public int createAccount()
         {
             Database db = new Database();
             return db.createAccount(this);
         }
+
+        //Deletes this account.
         public bool deleteAccount()
         {
             Database db = new Database();
             return db.deleteAccount(this);
         }
+
+        //Gets products based on the type of account.
         public List<Product> getMyProducts()
         {
             Database db = new Database();
             return db.getMyProducts(this);
         }
+
+        //Gets enquiries attached to this account.
         public List<Enquiry> getMyEnquiries()
         {
             Database db = new Database();

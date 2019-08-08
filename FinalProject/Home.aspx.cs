@@ -25,19 +25,22 @@ namespace FinalProject
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            //checks if token cookie (a logged in user) exists
             Authenticate auth = new Authenticate();
             HttpCookie myCookie = Request.Cookies["token"];
             if (myCookie != null)
             {
+                //if user exists, load their controls (based on their type)
                 Account user = auth.checkSession(myCookie.Value.ToString());
                 if (user != null)
                 {
 
                     this.user = user;
-
+                    //Displays Seller's controls
                     if (user.GetType() == typeof(Seller))
                     {
                         sellerPanel.Visible = true;
+                        //If the seller has any products listed in the database, load them into the view
                         this.products = user.getMyProducts();
                         if (this.products != null)
                         {
@@ -50,6 +53,7 @@ namespace FinalProject
                                 TableCell cell4 = new TableCell();
                                 TableCell cell5 = new TableCell();
 
+                                //Adds a button to edit each product individually
                                 Button btn = new Button();
                                 btn.Text = "Edit";
                                 btn.CssClass = "btn btn-primary";
@@ -70,7 +74,8 @@ namespace FinalProject
                                 yourProducts.Rows.Add(row);
                             }
 
-                             this.enqs = user.getMyEnquiries();
+                            //If the seller has any answered enquiries listed in the database, load them into the view
+                            this.enqs = user.getMyEnquiries();
 
                             foreach (var i in this.enqs)
                             {
@@ -83,6 +88,7 @@ namespace FinalProject
                                 cell3.Text = i.getResponse();
                                 if (cell3.Text == "")
                                 {
+                                    //Add a button to respond to each enquiry
                                     Button btn = new Button();
                                     btn.Text = "Respond";
                                     btn.CssClass = "btn btn-primary";
@@ -101,8 +107,10 @@ namespace FinalProject
 
                     } else
                     {
+                        //Load Buyer controls if user is a buyer
                         buyerPanel.Visible = true;
 
+                        //Load Buyer's enquiries into view
                         this.enqs = user.getMyEnquiries();
 
                         foreach (var i in this.enqs)
@@ -122,6 +130,7 @@ namespace FinalProject
                             buyerEnquiries.Rows.Add(row);
                         }
 
+                        //List all products available for purchase
                         Buyer buyer = (Buyer)user;
                         List<Product> products = buyer.getProductsForSale();
                         this.buyable = products;
@@ -130,8 +139,10 @@ namespace FinalProject
                             productsForSale.Rows.Clear();
                             drawTableHeader();
 
+                            //Search function: Can filter through categories and buy products from a list of search results
                             switch (searchFilter.SelectedValue)
                             {
+                                //Filter by category
                                 case "category":
                                     foreach (var p in this.buyable)
                                     {
@@ -171,9 +182,9 @@ namespace FinalProject
                                             productsForSale.Rows.Add(row);
                                         }
                                     }
-
-
                                     break;
+                                
+                                //Filter by seller
                                 case "seller":
                                     foreach (var p in this.buyable)
                                     {
@@ -213,9 +224,9 @@ namespace FinalProject
                                             productsForSale.Rows.Add(row);
                                         }
                                     }
-
-
                                     break;
+
+                                //Filter by company
                                 case "company":
                                     foreach (var p in this.buyable)
                                     {
@@ -255,9 +266,8 @@ namespace FinalProject
                                             productsForSale.Rows.Add(row);
                                         }
                                     }
-
-
                                     break;
+                                //Filter by product
                                 case "product":
                                     foreach (var p in this.buyable)
                                     {
@@ -297,9 +307,9 @@ namespace FinalProject
                                             productsForSale.Rows.Add(row);
                                         }
                                     }
-
-
                                     break;
+                                
+                                //Default list of products
                                 default:
                                     foreach (var p in products)
                                     {
@@ -359,9 +369,11 @@ namespace FinalProject
                 Debug.WriteLine("No session Found");
             }
         }
+
+        //Draws a header for the table of products
         protected void drawTableHeader()
         {
-
+            //if user is logged in, draw the header for the products table
             if (this.user != null)
             {
                 TableRow row = new TableRow();
@@ -385,10 +397,9 @@ namespace FinalProject
                 row.Cells.Add(cell5);
                 productsForSale.Rows.Add(row);
             }
-
-
         }
         
+        //Event handler for editing a product listing (seller control)
         protected void EditProduct_Click(object sender, EventArgs e)
         {
 
@@ -402,7 +413,6 @@ namespace FinalProject
                     {
                         if (p.getId() == btn.CommandArgument)
                         {
-
                             editProductId.Text = p.getId();
                             editProductName.Text = p.getName();
                             editProductCategory.Text = p.getCategory();
@@ -412,15 +422,16 @@ namespace FinalProject
                         }
                     }
 
-
+					//pop-up modal for adding products
                     ScriptManager.RegisterStartupScript(Page, Page.GetType(), "myProductsModal", "$('#myProductsModal').modal();", true);
                     productModalUpdate.Update();
-
                 }
             }
 
 
         }
+
+        //Replying to an enquiry (seller control)
         protected void EnquiryResponse_Click(object sender, EventArgs e)
         {
 
@@ -440,27 +451,23 @@ namespace FinalProject
                     }
                 }
 
-
+				//Creates a pop-up (modal) for replying to enquiries
                 ScriptManager.RegisterStartupScript(Page, Page.GetType(), "respondModal", "$('#respondModal').modal();", true);
                 respondUpdate.Update();
             }
-
-
         }
 
+		//Event handler for adding products through the modal
         protected void AddProductModal_Click(object sender, EventArgs e)
         {
-
             if (this.user != null)
             {
-
                 ScriptManager.RegisterStartupScript(Page, Page.GetType(), "addProductsModal", "$('#addProductsModal').modal();", true);
                 addProductUpdate.Update();
             }
-
-
         }
 
+		//Event handler for replying to Enquiries through the modal
         protected void enquireModal_Click(object sender, EventArgs e)
         {
             if (this.user != null)
@@ -471,19 +478,15 @@ namespace FinalProject
                 ScriptManager.RegisterStartupScript(Page, Page.GetType(), "enquireModal", "$('#enquireModal').modal();", true);
                 enquireUpdate.Update();
             }
-
-
         }
 
-        //All Options
-
-
-        //Seller Options
+		//Adding a product (seller control)
         protected void ButtonAddProduct_Click(object sender, EventArgs e)
         {
-            //Is a seller
+            //Checks to see if User is a seller
             if (user != null && user.GetType() == typeof(Seller))
             {
+                //Build product object
                 String id = "";
                 String sellerId = user.getId();
                 String buyerId = "";
@@ -497,13 +500,14 @@ namespace FinalProject
                 Product product = new Product(id, sellerId, buyerId, category, price, description, name, sellerName, company);
                 Seller seller = (Seller)user;
 
+                //Add new product to Database
                 seller.addProduct(product);
 
                 Response.Redirect(Request.RawUrl);
-
             }
         }
 
+        //Delete a product listing (Seller control)
         protected void ButtonDeleteProduct_Click(object sender, EventArgs e)
         {
             //Is a seller
@@ -524,6 +528,7 @@ namespace FinalProject
             }
         }
 
+        //Edit a product listing (Seller control)
         protected void ButtonEditProduct_Click(object sender, EventArgs e)
         {
             //Is a seller
@@ -534,7 +539,6 @@ namespace FinalProject
                 String category = editProductCategory.Text;
                 String description = editProductDescription.Text;
                 double price = Double.Parse(editProductPrice.Text);
-
                 
                 Product product = new Product(id, "", "", category, price, description, name, "", "");
 
@@ -546,16 +550,15 @@ namespace FinalProject
                 {
                     //error
                 }
-
             }
         }
 
+        //Respond to a buyer's enquiry (Seller control)
         protected void ButtonRespondEnquiry_Click(object sender, EventArgs e)
         {
 
             if (user != null && user.GetType() == typeof(Seller))
             {
-
                 String enquiryId = respondId.Text;
                 String response = responseText.Text;
   
@@ -574,7 +577,7 @@ namespace FinalProject
             }
         }
 
-        //Buyer Options
+        //Buying a product (Buyer control)
         protected void ButtonBuyProduct_Click(object sender, EventArgs e)
         {
             //Is a Buyer
@@ -594,13 +597,12 @@ namespace FinalProject
                     Response.Redirect(Request.RawUrl);
                 } else
                 {
-                    //err
+                    //error
                 }
-                
-
             }
         }
 
+        //Making an enquiry (Buyer Control)
         protected void ButtonCreateEnquiry_Click(object sender, EventArgs e)
         {
             //Is a Buyer
@@ -611,14 +613,15 @@ namespace FinalProject
                 String buyerId = user.getId();
                 String subject = addSubject.Text;
                 String questions = addQuestion.Text;
-                String response = ""; //leave blank when creating
+                //leave blank when creating for seller to respond
+                String response = ""; 
 
                 Enquiry enq = new Enquiry("", sellerId, buyerId, subject, questions, response);
 
                 Buyer buyer = (Buyer)user;
                 if (buyer.contactSeller(enq))
                 {
-                    Debug.WriteLine("Created");
+                    Debug.WriteLine("Created new enquiry");
                     Response.Redirect(Request.RawUrl);
                 } else
                 {
